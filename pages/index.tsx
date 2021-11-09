@@ -10,8 +10,29 @@ import {
   ListItem,
 } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
+import { useCallback, useEffect, useState } from 'react';
+import { API, graphqlOperation } from 'aws-amplify';
+import { listTodos } from 'src/graphql/queries';
 
 const Home: NextPage = () => {
+  const [todos, setTodos] = useState([]);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const {
+        data: {
+          listTodos: { items },
+        },
+      } = await API.graphql(graphqlOperation(listTodos));
+      setTodos(items);
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
   return (
     <Center>
       <Box>
@@ -42,18 +63,14 @@ const Home: NextPage = () => {
           </Center>
         </form>
         <List spacing={2}>
-          <ListItem>
-            <Box fontWeight="semibold">
-              <ListIcon as={CheckCircleIcon} color="teal" /> 제목
-            </Box>
-            <Box color="gray.500">내용</Box>
-          </ListItem>
-          <ListItem>
-            <Box fontWeight="semibold">
-              <ListIcon as={CheckCircleIcon} color="teal" /> 제목
-            </Box>
-            <Box color="gray.500">내용</Box>
-          </ListItem>
+          {todos.map(({ id, name, description }) => (
+            <ListItem key={id}>
+              <Box fontWeight="semibold">
+                <ListIcon as={CheckCircleIcon} color="teal" /> {name}
+              </Box>
+              <Box color="gray.500">{description}</Box>
+            </ListItem>
+          ))}
         </List>
       </Box>
     </Center>
