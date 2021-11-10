@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Box, List, ListIcon, ListItem } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
 import { API, graphqlOperation } from 'aws-amplify';
 import { listTodos } from 'src/graphql/queries';
+import { useTodoContext } from './TodoContextProvider';
 
 const TodoList: React.FC = () => {
-  const [todos, setTodos] = useState([]);
+  const { todos, dispatch } = useTodoContext();
   useEffect(() => {
     fetchData();
   }, []);
@@ -17,7 +18,7 @@ const TodoList: React.FC = () => {
           listTodos: { items },
         },
       } = await API.graphql(graphqlOperation(listTodos));
-      setTodos(items);
+      dispatch({ type: 'INITIALIZE', todos: items });
     } catch (err) {
       console.log(err);
     }
