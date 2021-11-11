@@ -3,6 +3,7 @@ import { Box, Button, Center, Input } from '@chakra-ui/react';
 import { API, graphqlOperation } from 'aws-amplify';
 import { createTodo } from 'src/graphql/mutations';
 import { useTodoContext } from './TodoContextProvider';
+import { v4 as uuid } from 'uuid';
 
 type FormData = {
   name: string;
@@ -13,6 +14,8 @@ const defaultFormData = {
   name: '',
   description: '',
 };
+
+export const clientId = uuid();
 
 const TodoCreate: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(defaultFormData);
@@ -35,7 +38,7 @@ const TodoCreate: React.FC = () => {
     setFormData(defaultFormData);
     try {
       const { data } = await API.graphql(
-        graphqlOperation(createTodo, { input: formData })
+        graphqlOperation(createTodo, { input: { ...formData, clientId } })
       );
       dispatch({ type: 'APPEND', todo: data.createTodo });
     } catch (err) {
