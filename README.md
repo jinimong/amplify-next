@@ -21,3 +21,13 @@
 
    amplify console api
    ```
+
+3. Amplify 클라우드 리소스 정리
+
+   ```shell
+   amplify remove api
+
+   amplify push
+
+   amplify delete
+   ```
